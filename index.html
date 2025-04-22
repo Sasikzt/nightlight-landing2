@@ -61,19 +61,19 @@
     <div class="timer" id="timer"></div>
     <div class="price">Ціна: 400 грн</div>
 
-    <form id="orderForm">
+    <form>
       <label>Ваше ім'я:</label>
-      <input type="text" name="name" required>
+      <input type="text" required>
 
       <label>Ваш телефон:</label>
-      <input type="tel" name="phone" required>
+      <input type="tel" required>
 
       <label>Місто:</label>
       <input type="text" id="citySearch" placeholder="Почніть вводити місто...">
-      <select id="citySelect" name="city" size="5" required></select>
+      <select id="citySelect" size="5" required></select>
 
       <label>Відділення Нової Пошти:</label>
-      <select id="warehouseSelect" name="warehouse" required>
+      <select id="warehouseSelect" required>
         <option value="">Оберіть відділення</option>
       </select>
 
@@ -82,9 +82,9 @@
   </div>
 
   <script>
+    // Таймер на 2 години
     const timerElement = document.getElementById("timer");
     let deadline = new Date(Date.now() + 2 * 60 * 60 * 1000);
-
     function updateTimer() {
       let now = new Date();
       let diff = deadline - now;
@@ -100,6 +100,7 @@
     setInterval(updateTimer, 1000);
     updateTimer();
 
+    // Пошук міст
     let cities = [];
     async function fetchCities() {
       const apiKey = "68d0609a02aacda82f60603b2cee7815";
@@ -112,22 +113,20 @@
       cities = response.data.data;
       updateCitySelect();
     }
-
     function updateCitySelect(query = "") {
       const citySelect = document.getElementById("citySelect");
       citySelect.innerHTML = "";
-      cities.filter(city => city.Description.toLowerCase().includes(query.toLowerCase())).forEach(city => {
-        const option = document.createElement("option");
-        option.value = city.Ref;
-        option.textContent = city.Description;
-        citySelect.appendChild(option);
-      });
+      cities.filter(city => city.Description.toLowerCase().includes(query.toLowerCase()))
+        .forEach(city => {
+          const option = document.createElement("option");
+          option.value = city.Ref;
+          option.textContent = city.Description;
+          citySelect.appendChild(option);
+        });
     }
-
     document.getElementById("citySearch").addEventListener("input", (e) => {
       updateCitySelect(e.target.value);
     });
-
     document.getElementById("citySelect").addEventListener("change", async (e) => {
       const cityRef = e.target.value;
       const apiKey = "68d0609a02aacda82f60603b2cee7815";
@@ -141,28 +140,42 @@
       warehouseSelect.innerHTML = "";
       response.data.data.forEach(wh => {
         const option = document.createElement("option");
-        option.value = wh.Description;
+        option.value = wh.Ref;
         option.textContent = wh.Description;
         warehouseSelect.appendChild(option);
       });
     });
-
-    document.getElementById("orderForm").addEventListener("submit", async function (e) {
-      e.preventDefault();
-      const form = e.target;
-      const formData = new FormData(form);
-      const data = Object.fromEntries(formData.entries());
-
-      await fetch("https://script.google.com/macros/s/AKfycbxHNx-1zGMSEvjXMBzoA5aumlPKpKLyENBxvIJpLiONk_USM2d1Iv-S2wP835U439ih/exec", {
-        method: "POST",
-        body: new URLSearchParams(data)
-      });
-
-      alert("Замовлення надіслано!");
-      form.reset();
-    });
-
     fetchCities();
+
+    // Обробка форми
+    const form = document.querySelector("form");
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = form.querySelector("input[type='text']").value;
+      const phone = form.querySelector("input[type='tel']").value;
+      const city = document.getElementById("citySelect").selectedOptions[0]?.textContent;
+      const warehouse = document.getElementById("warehouseSelect").selectedOptions[0]?.textContent;
+
+      if (!city || !warehouse) {
+        alert("Будь ласка, оберіть місто та відділення");
+        return;
+      }
+
+      const data = { name, phone, city, warehouse };
+
+      try {
+        await fetch("https://script.google.com/macros/s/AKfycbxHNx-1zGMSEvjXMBzoA5aumlPKpKLyENBxvIJpLiONk_USM2d1Iv-S2wP835U439ih/exec", {
+          method: "POST",
+          body: JSON.stringify(data),
+          headers: { "Content-Type": "application/json" }
+        });
+        alert("Замовлення надіслано успішно!");
+        form.reset();
+      } catch (err) {
+        alert("Помилка при надсиланні замовлення.");
+        console.error(err);
+      }
+    });
   </script>
 </body>
 </html>
