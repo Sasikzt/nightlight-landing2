@@ -1,0 +1,112 @@
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Нічник "Місяць"</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: url('bg.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+            text-align: center;
+        }
+        .container {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 40px;
+            max-width: 600px;
+            margin: 50px auto;
+            border-radius: 20px;
+        }
+        .title {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+        .price {
+            font-size: 1.5em;
+            margin: 20px 0;
+        }
+        .timer {
+            font-size: 1.2em;
+            color: #ffcc00;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            border: none;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #ff5722;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #e64a19;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="title">Нічник "Місяць"</div>
+        <img src="moon-lamp.jpg" alt="Нічник Місяць" style="width: 100%; max-width: 300px; border-radius: 20px;">
+        <div class="price">Ціна: 400 грн</div>
+        <div class="timer" id="timer">Акція закінчиться через: 01:00:00</div>
+        <form id="orderForm">
+            <div class="form-group">
+                <input type="text" name="name" placeholder="Ваше ім'я" required>
+            </div>
+            <div class="form-group">
+                <input type="tel" name="phone" placeholder="Ваш телефон" required>
+            </div>
+            <div class="form-group">
+                <select name="city" required>
+                    <option value="">Оберіть місто</option>
+                    <option value="Київ">Київ</option>
+                    <option value="Львів">Львів</option>
+                    <option value="Одеса">Одеса</option>
+                    <option value="Харків">Харків</option>
+                    <option value="Дніпро">Дніпро</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <select name="nova_poshta" required>
+                    <option value="">Оберіть відділення Нової Пошти</option>
+                    <option value="№1">Відділення №1</option>
+                    <option value="№2">Відділення №2</option>
+                    <option value="№3">Відділення №3</option>
+                    <option value="№4">Відділення №4</option>
+                </select>
+            </div>
+            <button type="submit">Замовити</button>
+        </form>
+    </div>
+    <script>
+        let countdownTime = 3600; // 1 hour in seconds
+        const timerElement = document.getElementById('timer');
+        function updateTimer() {
+            const hours = Math.floor(countdownTime / 3600);
+            const minutes = Math.floor((countdownTime % 3600) / 60);
+            const seconds = countdownTime % 60;
+            timerElement.textContent = `Акція закінчиться через: ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            countdownTime--;
+            if (countdownTime >= 0) {
+                setTimeout(updateTimer, 1000);
+            }
+        }
+        updateTimer();
+    </script>
+</body>
+</html>
